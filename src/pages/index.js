@@ -1,11 +1,29 @@
-import React, { useState, useRef } from "react"
-import { Canvas, useFrame } from 'react-three-fiber'
+import React, { useState, useRef} from "react"
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { Canvas, extend, useThree, useFrame } from 'react-three-fiber'
 import { useSpring, a } from 'react-spring/three'
 
 import './style.css'
 
+
+extend({ OrbitControls })
+const Controls = () => {
+  const orbitRef = useRef();
+  const { gl, camera } = useThree();
+
+  useFrame(()=>{
+    orbitRef.current.update()
+  })
+
+  return(
+    <orbitControls
+      args={[camera, gl.domElement]}
+      ref={orbitRef}
+    />
+  )
+}
+
 const Box = () => {
-  const meshRef = useRef();
   const [hovered, setHovered ] = useState(false)
   const [active, setActive] = useState(false)
   const props = useSpring({
@@ -14,13 +32,12 @@ const Box = () => {
   })
   
 
-  useFrame(() => {
-    meshRef.current.rotation.y += 0.01
-  })
+  // useFrame(() => {
+  //   meshRef.current.rotation.y += 0.01
+  // })
 
   return(
     <a.mesh
-      ref={meshRef} 
       onPointerOver={()=> setHovered(true)} 
       onPointerOut={()=> setHovered(false)}
       onClick={()=> setActive(!active)}
@@ -41,6 +58,7 @@ const Box = () => {
 
 export default () => (  
   <Canvas>
+    <Controls />
     <Box />
   </Canvas>
 )
