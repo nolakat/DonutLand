@@ -1,12 +1,27 @@
-import React, { useState, useRef} from "react"
+import React, { useState,  Suspense, useRef, useEffect} from "react"
+import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { Canvas, extend, useThree, useFrame } from 'react-three-fiber'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { Canvas, extend, useThree, useFrame, useLoader } from 'react-three-fiber'
 import { useSpring, a } from 'react-spring/three'
 
 import './style.css'
 
-
 extend({ OrbitControls })
+
+const SpaceShip = () =>{
+  const [model, setModel] = useState();
+  console.log('model', model);
+
+
+  useEffect(() => {
+    new GLTFLoader().load('/scene.gltf', setModel);
+  })
+  
+  return model ? <primitive object={model.scene} /> : null
+}
+
+
 const Controls = () => {
   const orbitRef = useRef();
   const { gl, camera } = useThree();
@@ -17,7 +32,6 @@ const Controls = () => {
 
   return(
     <orbitControls
-      autoRotate
       maxPolarAngle={Math.PI / 1.5}
       minPolarAngle={Math.PI / 3}
       args={[camera, gl.domElement]}
@@ -25,6 +39,19 @@ const Controls = () => {
     />
   )
 }
+
+const Plane = () => (
+  <mesh rotation={[-Math.PI/2 , 0 , 0]} position={[0, -0.5, 0]} receiveShadow>
+      <planeBufferGeometry 
+        attach="geometry"
+        args={[100, 100]}
+      />
+      <meshPhysicalMaterial
+        attach="material"
+        color="white"
+      />
+  </mesh>
+)
 
 const Box = () => {
   const [hovered, setHovered ] = useState(false)
@@ -34,7 +61,7 @@ const Box = () => {
    color: hovered ? "hotpink" : "gray"
   })
   
-
+  console.log('Box');
   // useFrame(() => {
   //   meshRef.current.rotation.y += 0.01
   // })
@@ -45,9 +72,9 @@ const Box = () => {
       onPointerOut={()=> setHovered(false)}
       onClick={()=> setActive(!active)}
       scale={props.scale}
+      castShadow
       >
-      <ambientLight/>
-      <spotLight position={[0, 5, 10]}/>
+      
       <boxBufferGeometry 
         attach="geometry"
         args={[1, 1, 1]}
@@ -61,9 +88,43 @@ const Box = () => {
 }
 
 
+
+const Donut = () =>{ 
+  const [modelLoaded, setModelLoaded] = React.useState(false);
+  const [model, setModel] = useState();
+
+  useEffect(() => {
+    new GLTFLoader().load('/bestdonut.gltf', setModel);
+  })
+
+  console.log('donut', model);
+  return model ? <primitive object={model.scene} /> : null
+
+}
+
+const Asset = ({url}) => {
+  const gltf = useLoader(GLTFLoader, url)
+  console.log('Asset', gltf)
+  return <primitive object={gltf.scene} dispose={null} />
+}
+
+
 export default () => (  
-  <Canvas>
+  <Canvas camera={{ position: [0, 0.25, 0.2] }} 
+          onCreated={({ gl }) => {
+            gl.shadowMap.enabled= true
+            gl.shadowMap.type = THREE.PCFSoftShadowMap
+  }}>
+    <ambientLight/>
+    <spotLight position={[15, 20, 5]} penumbra={1} castShadow />
+    <fog attach="fog" args={["black", 10, 25]}/>
     <Controls />
-    <Box />
+    {/* <Box /> */}
+    {/* <Plane />  */}
+    {/* <Donut /> */}
+    {/* <SpaceShip /> */}
+    <Suspense fallback={<Box />}>
+      <Asset url="/bestdonut.gltf" />
+    </Suspense>
   </Canvas>
 )
