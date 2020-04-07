@@ -17,6 +17,9 @@ const Controls = () => {
 
   return(
     <orbitControls
+      autoRotate
+      maxPolarAngle={Math.PI / 1.5}
+      minPolarAngle={Math.PI / 3}
       args={[camera, gl.domElement]}
       ref={orbitRef}
     />
@@ -43,11 +46,13 @@ const Box = () => {
       onClick={()=> setActive(!active)}
       scale={props.scale}
       >
+      <ambientLight/>
+      <spotLight position={[0, 5, 10]}/>
       <boxBufferGeometry 
         attach="geometry"
         args={[1, 1, 1]}
       />
-      <a.meshBasicMaterial
+      <a.meshPhysicalMaterial
         attach="material"
         color={props.color}
       />
