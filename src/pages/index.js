@@ -2,8 +2,10 @@ import React, { useState,  Suspense, useRef, useEffect} from "react"
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { Canvas, extend, useThree, useFrame, useLoader } from 'react-three-fiber'
 import { useSpring, a } from 'react-spring/three'
+import Loading from './components/Loading';
 
 import './style.css'
 
@@ -12,8 +14,6 @@ extend({ OrbitControls })
 const SpaceShip = () =>{
   const [model, setModel] = useState();
   console.log('model', model);
-
-
   useEffect(() => {
     new GLTFLoader().load('/scene.gltf', setModel);
   })
@@ -87,8 +87,6 @@ const Box = () => {
   )
 }
 
-
-
 const Donut = () =>{ 
   const [modelLoaded, setModelLoaded] = React.useState(false);
   const [model, setModel] = useState();
@@ -98,18 +96,42 @@ const Donut = () =>{
   })
 
   console.log('donut', model);
-  return model ? <primitive object={model.scene} /> : null
+  return model ? <primitive object={model.scene} /> : <Loading /> 
+
 
 }
 
 const Asset = ({url}) => {
-  const gltf = useLoader(GLTFLoader, url)
-  console.log('Asset', gltf)
+  const gltf = useLoader(GLTFLoader, url, loader=>{
+    const dracoLoader = new DRACOLoader()
+    dracoLoader.setDecoderPath('/draco-gltf/')
+    loader.setDRACOLoader(dracoLoader)
+  })
+  console.log('Asset Loaded', gltf)
+  React.useEffect(() => {
+   
+}, []);
   return <primitive object={gltf.scene} dispose={null} />
 }
 
 
-export default () => (  
+export default () => {
+
+  const [modelLoaded, setModelLoaded] = React.useState(false);
+  const [loadUI, setLoadUI] = React.useState(false);
+
+  React.useEffect(() => {
+    if(modelLoaded){
+      setTimeout(() => {
+        setModelLoaded(true)
+      }, 2000)
+    }
+  }, [modelLoaded])
+
+  
+  return ( 
+  <>
+  <h1>HELLO YOU</h1>
   <Canvas camera={{ position: [0, 0.25, 0.2] }} 
           onCreated={({ gl }) => {
             gl.shadowMap.enabled= true
@@ -124,7 +146,11 @@ export default () => (
     {/* <Donut /> */}
     {/* <SpaceShip /> */}
     <Suspense fallback={<Box />}>
-      <Asset url="/bestdonut.gltf" />
+      <Asset 
+        url="/newdonut.gltf"
+       />
     </Suspense>
   </Canvas>
+  </>
 )
+}
