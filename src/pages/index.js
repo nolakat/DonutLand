@@ -8,7 +8,6 @@ import { Canvas, extend, useThree, useFrame, useLoader } from 'react-three-fiber
 import { useSpring, a } from 'react-spring/three'
 import * as CANNON from 'cannon';
 
-
 import './style.scss'
 
 extend({ OrbitControls })
@@ -48,13 +47,14 @@ const Box = () => {
 }
 
 export default () => {
-  const [loadUI, setLoadUI] = React.useState(false);
+  const [loadUI, setLoadUI] = React.useState(true);
   const [modelLoaded, setModelLoaded] = React.useState(false);
 
   React.useEffect(() => {
     if(modelLoaded){
       setTimeout(() => {
-        setLoadUI(true)
+        setLoadUI(false)
+        console.log('Hide LoadUI')
       }, 2000)
     }
   }, [modelLoaded])
@@ -79,18 +79,25 @@ export default () => {
   }
 
   const Asset = ({url}) => {
-    const model = useLoader(GLTFLoader, url, loader=>{
-      const dracoLoader = new DRACOLoader()
-      dracoLoader.setDecoderPath('/draco-gltf/')
-      loader.setDRACOLoader(dracoLoader)
-    })
+    if(!modelLoaded){
+
+      const model = useLoader(GLTFLoader, url, loader=>{
+        const dracoLoader = new DRACOLoader()
+        dracoLoader.setDecoderPath('/draco-gltf/')
+        loader.setDRACOLoader(dracoLoader)
+      })
+    
+      console.log('Asset Loaded', model)
+      React.useEffect(() => {
+        setModelLoaded(true);
+      }, []);
+
+      return <primitive object={model.scene} dispose={null} />
+
+    }
+
   
-    console.log('Asset Loaded', model)
-    React.useEffect(() => {
-      setModelLoaded(true);
-  }, []);
-  
-    return <primitive object={model.scene} dispose={null} />
+    
   }
 
   const Loading = (props) =>{
@@ -107,12 +114,13 @@ export default () => {
   < div className="App">
    
     <Transition
-          items={!modelLoaded}
+          items={loadUI}
           from={{ opacity: 1}}
+          enter={{ opacity: 1}}
           leave={{ opacity: 0 }}>
-          {modelLoaded =>
-           modelLoaded &&  (props => <Loading style={props}/>) }
-      </Transition>
+          {loadUI =>
+           loadUI &&  (props => <Loading style={props}/>) }
+    </Transition>
 
     <div className="App__canvas">
       <Canvas camera={{ position: [0, 0.25, 0.2] }} 
