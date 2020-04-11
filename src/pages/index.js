@@ -92,6 +92,14 @@ export default () => {
   
     return <primitive object={model.scene} dispose={null} />
   }
+
+  const Loading = (props) =>{
+    return(
+      <animated.div  style={props.style} className="Loading__spinner" >
+           <h1>LOADING</h1>
+       </animated.div>
+    )
+  }
   
 
 
@@ -100,12 +108,10 @@ export default () => {
    
     <Transition
           items={!modelLoaded}
-          enter={{ opacity: 1 }}
+          from={{ opacity: 1}}
           leave={{ opacity: 0 }}>
           {modelLoaded =>
-           modelLoaded &&  (props => <animated.div  style={props} className="Loading__spinner" >
-           <h1>LOADING</h1>
-       </animated.div>) }
+           modelLoaded &&  (props => <Loading style={props}/>) }
       </Transition>
 
     <div className="App__canvas">
