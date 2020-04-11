@@ -6,12 +6,10 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { Transition, animated } from 'react-spring/renderprops'
 import { Canvas, extend, useThree, useFrame, useLoader } from 'react-three-fiber'
 import { useSpring, a } from 'react-spring/three'
-import Loading from './components/Loading';
 import * as CANNON from 'cannon';
 
 
 import './style.scss'
-import './components/Loading.scss';
 
 extend({ OrbitControls })
 
