@@ -1,3 +1,5 @@
+$color-bg: paleturquoise;
+
 html,
 body,
 #___gatsby,
@@ -12,7 +14,7 @@ canvas,
 }
 
 canvas{
-    background: paleturquoise;
+    background: $color-bg;
 }
 
 
@@ -27,6 +29,6 @@ canvas{
     align-items: center;
     justify-content: center;
     opacity: 1;
-    background: red;
+    background: $color-bg;
 }
 
