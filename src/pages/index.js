@@ -3,55 +3,17 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
+import { Transition, animated } from 'react-spring/renderprops'
 import { Canvas, extend, useThree, useFrame, useLoader } from 'react-three-fiber'
 import { useSpring, a } from 'react-spring/three'
 import Loading from './components/Loading';
+import * as CANNON from 'cannon';
 
-import './style.css'
+
+import './style.scss'
+import './components/Loading.scss';
 
 extend({ OrbitControls })
-
-const SpaceShip = () =>{
-  const [model, setModel] = useState();
-  console.log('model', model);
-  useEffect(() => {
-    new GLTFLoader().load('/scene.gltf', setModel);
-  })
-  
-  return model ? <primitive object={model.scene} /> : null
-}
-
-
-const Controls = () => {
-  const orbitRef = useRef();
-  const { gl, camera } = useThree();
-
-  useFrame(()=>{
-    orbitRef.current.update()
-  })
-
-  return(
-    <orbitControls
-      maxPolarAngle={Math.PI / 1.5}
-      minPolarAngle={Math.PI / 3}
-      args={[camera, gl.domElement]}
-      ref={orbitRef}
-    />
-  )
-}
-
-const Plane = () => (
-  <mesh rotation={[-Math.PI/2 , 0 , 0]} position={[0, -0.5, 0]} receiveShadow>
-      <planeBufferGeometry 
-        attach="geometry"
-        args={[100, 100]}
-      />
-      <meshPhysicalMaterial
-        attach="material"
-        color="white"
-      />
-  </mesh>
-)
 
 const Box = () => {
   const [hovered, setHovered ] = useState(false)
@@ -87,70 +49,85 @@ const Box = () => {
   )
 }
 
-const Donut = () =>{ 
-  const [modelLoaded, setModelLoaded] = React.useState(false);
-  const [model, setModel] = useState();
-
-  useEffect(() => {
-    new GLTFLoader().load('/bestdonut.gltf', setModel);
-  })
-
-  console.log('donut', model);
-  return model ? <primitive object={model.scene} /> : <Loading /> 
-
-
-}
-
-const Asset = ({url}) => {
-  const gltf = useLoader(GLTFLoader, url, loader=>{
-    const dracoLoader = new DRACOLoader()
-    dracoLoader.setDecoderPath('/draco-gltf/')
-    loader.setDRACOLoader(dracoLoader)
-  })
-  console.log('Asset Loaded', gltf)
-  React.useEffect(() => {
-   
-}, []);
-  return <primitive object={gltf.scene} dispose={null} />
-}
-
-
 export default () => {
-
-  const [modelLoaded, setModelLoaded] = React.useState(false);
   const [loadUI, setLoadUI] = React.useState(false);
+  const [modelLoaded, setModelLoaded] = React.useState(false);
 
   React.useEffect(() => {
     if(modelLoaded){
       setTimeout(() => {
-        setModelLoaded(true)
+        setLoadUI(true)
       }, 2000)
     }
   }, [modelLoaded])
 
+  const Controls = () => {
+    const orbitRef = useRef();
+    const { gl, camera } = useThree();
   
+    useFrame(()=>{
+      orbitRef.current.update()
+    })
+  
+    return(
+      <orbitControls
+        maxPolarAngle={Math.PI / 1.5}
+        minPolarAngle={Math.PI / 3}
+        enableZoom={false}
+        args={[camera, gl.domElement]}
+        ref={orbitRef}
+      />
+    )
+  }
+
+  const Asset = ({url}) => {
+    const model = useLoader(GLTFLoader, url, loader=>{
+      const dracoLoader = new DRACOLoader()
+      dracoLoader.setDecoderPath('/draco-gltf/')
+      loader.setDRACOLoader(dracoLoader)
+    })
+  
+    console.log('Asset Loaded', model)
+    React.useEffect(() => {
+      setModelLoaded(true);
+  }, []);
+  
+    return <primitive object={model.scene} dispose={null} />
+  }
+  
+
+
   return ( 
-  <>
-  <h1>HELLO YOU</h1>
-  <Canvas camera={{ position: [0, 0.25, 0.2] }} 
-          onCreated={({ gl }) => {
-            gl.shadowMap.enabled= true
-            gl.shadowMap.type = THREE.PCFSoftShadowMap
-  }}>
-    <ambientLight/>
-    <spotLight position={[15, 20, 5]} penumbra={1} castShadow />
-    <fog attach="fog" args={["black", 10, 25]}/>
-    <Controls />
-    {/* <Box /> */}
-    {/* <Plane />  */}
-    {/* <Donut /> */}
-    {/* <SpaceShip /> */}
-    <Suspense fallback={<Box />}>
-      <Asset 
-        url="/newdonut.gltf"
-       />
-    </Suspense>
-  </Canvas>
-  </>
+  < div className="App">
+   
+    <Transition
+          items={!modelLoaded}
+          enter={{ opacity: 1 }}
+          leave={{ opacity: 0 }}>
+          {modelLoaded =>
+           modelLoaded &&  (props => <animated.div  style={props} className="Loading__spinner" >
+           <h1>LOADING</h1>
+       </animated.div>) }
+      </Transition>
+
+    <div className="App__canvas">
+      <Canvas camera={{ position: [0, 0.25, 0.2] }} 
+              onCreated={({ gl }) => {
+                gl.shadowMap.enabled= true
+                gl.shadowMap.type = THREE.PCFSoftShadowMap
+      }}>
+        <ambientLight/>
+        <spotLight position={[15, 20, 5]} penumbra={1} castShadow />
+        <fog attach="fog" args={["black", 10, 25]}/>
+        <Controls />
+        <Suspense fallback={null}>
+          <Asset 
+            url="/newdonut.gltf"
+          />
+        </Suspense>
+      </Canvas>
+    </div>
+
+  </div>
 )
 }

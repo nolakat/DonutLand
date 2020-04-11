@@ -2,13 +2,17 @@ html,
 body,
 #___gatsby,
 #gatsby-focus-wrapper,
-canvas{
+canvas,
+.App,
+.App__canvas{
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
+    background: red;
 }
 
 canvas{
     background: paleturquoise;
 }
+
