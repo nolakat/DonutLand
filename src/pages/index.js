@@ -79,25 +79,19 @@ export default () => {
   }
 
   const Asset = ({url}) => {
-    if(!modelLoaded){
-
-      const model = useLoader(GLTFLoader, url, loader=>{
-        const dracoLoader = new DRACOLoader()
-        dracoLoader.setDecoderPath('/draco-gltf/')
-        loader.setDRACOLoader(dracoLoader)
-      })
     
-      console.log('Asset Loaded', model)
-      React.useEffect(() => {
-        setModelLoaded(true);
-      }, []);
-
-      return <primitive object={model.scene} dispose={null} />
-
-    }
-
+    const model = useLoader(GLTFLoader, url, loader=>{
+      const dracoLoader = new DRACOLoader()
+      dracoLoader.setDecoderPath('/draco-gltf/')
+      loader.setDRACOLoader(dracoLoader)
+    })
   
-    
+    console.log('Asset Loaded', model)
+    React.useEffect(() => {
+      setModelLoaded(true);
+  }, []);
+  
+    return <primitive object={model.scene} dispose={null} />
   }
 
   const Loading = (props) =>{
