@@ -47,17 +47,17 @@ const Box = () => {
 }
 
 export default () => {
-  const [loadUI, setLoadUI] = React.useState(true);
-  const [modelLoaded, setModelLoaded] = React.useState(false);
+  const [showLoader, setShowLoader] = React.useState(true);
+  // const [modelLoaded, setModelLoaded] = React.useState(false);
 
-  React.useEffect(() => {
-    if(modelLoaded){
-      setTimeout(() => {
-        setLoadUI(false)
-        console.log('Hide LoadUI')
-      }, 2000)
-    }
-  }, [modelLoaded])
+  // React.useEffect(() => {
+  //   if(modelLoaded){
+  //     setTimeout(() => {
+  //       setShowLoader(false)
+  //       console.log('Hide LoadUI')
+  //     }, 2000)
+  //   }
+  // }, [modelLoaded])
 
   const Controls = () => {
     const orbitRef = useRef();
@@ -79,17 +79,17 @@ export default () => {
   }
 
   const Asset = ({url}) => {
-
     const model = useLoader(GLTFLoader, url, loader=>{
       const dracoLoader = new DRACOLoader()
       dracoLoader.setDecoderPath('/draco-gltf/')
       loader.setDRACOLoader(dracoLoader)
     })
   
-    console.log('Asset Loaded', model)
+    console.log('Asset Loaded', !showLoader)
     React.useEffect(() => {
-      setModelLoaded(true);
-  }, []);
+      // setModelLoaded(true);
+      setShowLoader(false)
+  }, 2000);
   
     return <primitive object={model.scene} dispose={null} />
   }
@@ -108,14 +108,14 @@ export default () => {
   < div className="App">
    
     <Transition
-          items={loadUI}
+          items={showLoader}
           initial={{opacity: 1}}
           from={{ opacity: 1}}
           enter={{ opacity: 1}}
           leave={{ opacity: 0 }}>
-          {loadUI =>
-           loadUI && (props => <Loading style={props}/>) }
-    </Transition>
+          {showLoader =>
+           showLoader && (props => <Loading style={props}/>) }
+    </Transition> 
 
     <div className="App__canvas">
       <Canvas camera={{ position: [0, 0.25, 0.2] }} 
