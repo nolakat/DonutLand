@@ -79,7 +79,7 @@ export default () => {
   }
 
   const Asset = ({url}) => {
-    
+
     const model = useLoader(GLTFLoader, url, loader=>{
       const dracoLoader = new DRACOLoader()
       dracoLoader.setDecoderPath('/draco-gltf/')
@@ -109,11 +109,12 @@ export default () => {
    
     <Transition
           items={loadUI}
+          initial={{opacity: 1}}
           from={{ opacity: 1}}
           enter={{ opacity: 1}}
           leave={{ opacity: 0 }}>
           {loadUI =>
-           loadUI &&  (props => <Loading style={props}/>) }
+           loadUI && (props => <Loading style={props}/>) }
     </Transition>
 
     <div className="App__canvas">
