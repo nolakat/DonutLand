@@ -6,7 +6,8 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { Transition, animated } from 'react-spring/renderprops'
 import { Canvas, extend, useThree, useFrame, useLoader } from 'react-three-fiber'
 import { useSpring, a } from 'react-spring/three'
-import * as CANNON from 'cannon';
+import Donut from './components/Donut'
+import * as CANNON from 'cannon'
 
 import './style.scss'
 
@@ -48,13 +49,12 @@ const Box = () => {
 
 export default () => {
   const [showLoader, setShowLoader] = React.useState(true);
-  // const [modelLoaded, setModelLoaded] = React.useState(false);
+  const [modelLoaded, setModelLoaded] = React.useState(false);
 
   // React.useEffect(() => {
   //   if(modelLoaded){
   //     setTimeout(() => {
   //       setShowLoader(false)
-  //       console.log('Hide LoadUI')
   //     }, 2000)
   //   }
   // }, [modelLoaded])
@@ -88,16 +88,18 @@ export default () => {
     console.log('Asset Loaded', !showLoader)
     React.useEffect(() => {
       // setModelLoaded(true);
-      setShowLoader(false)
-  }, 2000);
+      setTimeout(() => {
+        setShowLoader(false)
+      }, 2000)
+    }, []);
   
     return <primitive object={model.scene} dispose={null} />
   }
 
   const Loading = (props) =>{
     return(
-      <animated.div  style={props.style} className="Loading__spinner" >
-           <h1>LOADING</h1>
+      <animated.div  style={props.style} className="Loading__container" >
+           <div className="Loading__spinner"><h1>LOADING</h1></div>
        </animated.div>
     )
   }
@@ -106,17 +108,21 @@ export default () => {
 
   return ( 
   < div className="App">
+    <Donut
+     setModelLoaded={setModelLoaded}/>
    
     <Transition
           items={showLoader}
           initial={{opacity: 1}}
           from={{ opacity: 1}}
-          enter={{ opacity: 1}}
-          leave={{ opacity: 0 }}>
+          enter={{ opacity: 1 }}
+          update={{}}
+          leave={{ opacity: 0}}>
           {showLoader =>
            showLoader && (props => <Loading style={props}/>) }
     </Transition> 
 
+     
     <div className="App__canvas">
       <Canvas camera={{ position: [0, 0.25, 0.2] }} 
               onCreated={({ gl }) => {
@@ -131,6 +137,8 @@ export default () => {
           <Asset 
             url="/newdonut.gltf"
           />
+          {/* <Donut
+            setModelLoaded = {setModelLoaded} /> */}
         </Suspense>
       </Canvas>
     </div>
