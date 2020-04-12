@@ -135,11 +135,11 @@ export default () => {
         <fog attach="fog" args={["black", 10, 25]}/>
         <Controls />
         <Suspense fallback={null}>
-          {/* <Asset 
+          <Asset 
             url="/newdonut.gltf"
-          /> */}
-          <Donut
-            setShowLoader={setShowLoader} />
+          />
+          {/* <Donut
+            setShowLoader={setShowLoader} /> */}
         </Suspense>
       </Canvas>
     </div>
