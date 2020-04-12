@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect} from "react"
-import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { useLoader } from 'react-three-fiber'
 import { useSpring, animated as a } from 'react-spring/three'
-import { MeshStandardMaterial } from "three"
+
 
 
 export default ({setShowLoader}) => {
@@ -12,11 +11,6 @@ export default ({setShowLoader}) => {
     const outerGroup = useRef()
     const [hovered, setHovered ] = useState(false);
     useEffect(() => void (document.body.style.cursor = hovered ? 'pointer' : 'auto'), [hovered]);
-
-    const dark = new THREE.Color('#8D7471');
-    const white = new THREE.Color('#fff');
-    // const dark = new THREE.Color("rgb(255, 0, 0)");
-    // const white = new THREE.Color("rgb(255, 255, 255)");
 
     const props = useSpring({
         scale: hovered ? [1.5, 1.5, 1.5] : [1, 1, 1],
@@ -29,9 +23,6 @@ export default ({setShowLoader}) => {
         dracoLoader.setDecoderPath('/draco-gltf/')
         loader.setDRACOLoader(dracoLoader)
       })
-
-        // materials['Material.001'].color = new THREE.Color('#fff');
-
 
         //Start CSS
     React.useEffect(() => {
