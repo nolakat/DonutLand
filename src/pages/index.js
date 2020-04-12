@@ -7,7 +7,6 @@ import { Transition, animated } from 'react-spring/renderprops'
 import { Canvas, extend, useThree, useFrame, useLoader } from 'react-three-fiber'
 import { useSpring, a } from 'react-spring/three'
 import Donut from './components/Donut'
-import * as CANNON from 'cannon'
 
 import './style.scss'
 
