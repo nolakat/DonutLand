@@ -84,8 +84,11 @@ export default () => {
       dracoLoader.setDecoderPath('/draco-gltf/')
       loader.setDRACOLoader(dracoLoader)
     })
-  
-    console.log('Asset Loaded', !showLoader)
+
+    // model.materials['Material.001'].color = new THREE.Color('#EDF0DA');
+    // model.materials['Material.001'].emissiveIntensity = 1;
+
+    console.log('Asset Loaded', model.materials['Material.001'])
     React.useEffect(() => {
       // setModelLoaded(true);
       setTimeout(() => {
@@ -108,8 +111,6 @@ export default () => {
 
   return ( 
   < div className="App">
-    <Donut
-     setModelLoaded={setModelLoaded}/>
    
     <Transition
           items={showLoader}
@@ -134,11 +135,11 @@ export default () => {
         <fog attach="fog" args={["black", 10, 25]}/>
         <Controls />
         <Suspense fallback={null}>
-          <Asset 
+          {/* <Asset 
             url="/newdonut.gltf"
-          />
-          {/* <Donut
-            setModelLoaded = {setModelLoaded} /> */}
+          /> */}
+          <Donut
+            setShowLoader={setShowLoader} />
         </Suspense>
       </Canvas>
     </div>
